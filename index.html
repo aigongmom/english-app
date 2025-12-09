@@ -440,9 +440,11 @@
           <button class="grade-btn" data-grade="E4">초4</button>
           <button class="grade-btn" data-grade="E5">초5</button>
           <button class="grade-btn" data-grade="E6">초6</button>
-          <button class="grade-btn" data-grade="M1">중1</button>
-          <button class="grade-btn" data-grade="M2">중2</button>
-          <button class="grade-btn" data-grade="M3">중3</button>
+          <button class="grade-btn" data-grade="M1">중등_1</button>
+          <button class="grade-btn" data-grade="M2">중등_2</button>
+          <button class="grade-btn" data-grade="M3">중등_3</button>
+          <button class="grade-btn" data-grade="M4">TOEIC토익</button>
+
         </div>
         <div class="current-grade" id="currentGradeText">현재: 초등 3학년 수준</div>
       </div>
@@ -473,6 +475,7 @@
             <input type="text" id="vocabInput" placeholder="정답을 영어로 입력" />
             <div class="btn-row">
               <button class="btn-main" id="vocabCheckBtn">정답 확인</button>
+              <button id="vocabSpeakBtn" class="sub-btn">🔊 발음 듣기</button>
               <button class="btn-sub" id="vocabNextBtn">다음 문제</button>
               <button class="btn-sub" id="vocabShowBtn">정답 보기</button>
             </div>
@@ -534,232 +537,1171 @@
 
   <script>
     // ---------------- 학년별 데이터 ----------------
-    const gradeData = {
-      E3: {
-        label: "초등 3학년 수준",
-        vocabList: [
-          { english: "cat", korean: "고양이" },
-          { english: "dog", korean: "강아지" },
-          { english: "school", korean: "학교" },
-          { english: "book", korean: "책" },
-          { english: "pencil", korean: "연필" }
-        ],
-        listenSentences: [
-          { english: "This is my cat.", korean: "이것은 내 고양이에요." },
-          { english: "I have a blue bag.", korean: "나는 파란 가방이 있어요." },
-          { english: "I go to school by bus.", korean: "나는 버스를 타고 학교에 가요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "This is my ____.",
-            answer: "cat",
-            options: ["cat", "desk", "door", "bus"]
-          },
-          {
-            sentence: "I have a ____ bag.",
-            answer: "blue",
-            options: ["blue", "big", "dog", "green"]
-          },
-          {
-            sentence: "I go to ____ every day.",
-            answer: "school",
-            options: ["school", "apple", "bed", "phone"]
-          }
-        ]
+   // ---------------- 단어 수 늘리기용 헬퍼 함수 ----------------
+function expandVocab(baseList, targetCount) {
+  const result = [];
+  for (let i = 0; i < targetCount; i++) {
+    // baseList를 계속 반복해서 채우기
+    const item = baseList[i % baseList.length];
+    result.push({ english: item.english, korean: item.korean });
+  }
+  return result;
+}
+
+// ---------------- 학년별 기본 단어 세트 ----------------
+// ⚠ 여기 단어들은 예시야. 나중에 교과서/시험 단어로 교체 가능!
+
+E3: {
+  label: "초등 3학년 수준",
+  vocabList: [
+    { english: "cat", korean: "고양이" },
+    { english: "dog", korean: "강아지" },
+    { english: "bird", korean: "새" },
+    { english: "fish", korean: "물고기" },
+    { english: "rabbit", korean: "토끼" },
+    { english: "tiger", korean: "호랑이" },
+    { english: "lion", korean: "사자" },
+    { english: "elephant", korean: "코끼리" },
+    { english: "monkey", korean: "원숭이" },
+    { english: "bear", korean: "곰" },
+    { english: "apple", korean: "사과" },
+    { english: "banana", korean: "바나나" },
+    { english: "orange", korean: "오렌지" },
+    { english: "grape", korean: "포도" },
+    { english: "watermelon", korean: "수박" },
+    { english: "milk", korean: "우유" },
+    { english: "water", korean: "물" },
+    { english: "juice", korean: "주스" },
+    { english: "rice", korean: "밥, 쌀" },
+    { english: "bread", korean: "빵" },
+    { english: "egg", korean: "달걀" },
+    { english: "school", korean: "학교" },
+    { english: "classroom", korean: "교실" },
+    { english: "teacher", korean: "선생님" },
+    { english: "student", korean: "학생" },
+    { english: "friend", korean: "친구" },
+    { english: "desk", korean: "책상" },
+    { english: "chair", korean: "의자" },
+    { english: "book", korean: "책" },
+    { english: "pencil", korean: "연필" },
+    { english: "eraser", korean: "지우개" },
+    { english: "ruler", korean: "자" },
+    { english: "bag", korean: "가방" },
+    { english: "door", korean: "문" },
+    { english: "window", korean: "창문" },
+    { english: "floor", korean: "바닥" },
+    { english: "wall", korean: "벽" },
+    { english: "clock", korean: "시계" },
+    { english: "computer", korean: "컴퓨터" },
+    { english: "tablet", korean: "태블릿" },
+    { english: "phone", korean: "전화기, 휴대폰" },
+    { english: "family", korean: "가족" },
+    { english: "mother", korean: "어머니" },
+    { english: "father", korean: "아버지" },
+    { english: "brother", korean: "형/오빠/남동생" },
+    { english: "sister", korean: "언니/누나/여동생" },
+    { english: "grandfather", korean: "할아버지" },
+    { english: "grandmother", korean: "할머니" },
+    { english: "home", korean: "집" },
+    { english: "bed", korean: "침대" }
+  ];  
+
+const baseVocabE4 = [
+  vocabList: [
+  { english: "family", korean: "가족" },
+  { english: "father", korean: "아버지" },
+  { english: "mother", korean: "어머니" },
+  { english: "brother", korean: "형제, 남동생" },
+  { english: "sister", korean: "자매, 여동생" },
+  { english: "grandfather", korean: "할아버지" },
+  { english: "grandmother", korean: "할머니" },
+  { english: "cousin", korean: "사촌" },
+  { english: "uncle", korean: "삼촌, 아저씨" },
+  { english: "aunt", korean: "이모, 고모" },
+
+  { english: "homework", korean: "숙제" },
+  { english: "favorite", korean: "가장 좋아하는" },
+  { english: "subject", korean: "과목" },
+  { english: "lesson", korean: "수업" },
+  { english: "music", korean: "음악" },
+  { english: "math", korean: "수학" },
+  { english: "science", korean: "과학" },
+  { english: "English", korean: "영어" },
+  { english: "PE", korean: "체육" },
+  { english: "art", korean: "미술" },
+
+  { english: "classmate", korean: "반 친구" },
+  { english: "playground", korean: "운동장" },
+  { english: "library", korean: "도서관" },
+  { english: "principal", korean: "교장 선생님" },
+  { english: "lunch", korean: "점심" },
+  { english: "snack", korean: "간식" },
+  { english: "dinner", korean: "저녁 식사" },
+  { english: "breakfast", korean: "아침 식사" },
+  { english: "weekend", korean: "주말" },
+  { english: "holiday", korean: "휴일" },
+
+  { english: "birthday", korean: "생일" },
+  { english: "present", korean: "선물" },
+  { english: "party", korean: "파티" },
+  { english: "game", korean: "게임" },
+  { english: "soccer", korean: "축구" },
+  { english: "baseball", korean: "야구" },
+  { english: "basketball", korean: "농구" },
+  { english: "puzzle", korean: "퍼즐" },
+  { english: "movie", korean: "영화" },
+  { english: "cartoon", korean: "만화 영화" },
+
+  { english: "comic", korean: "만화책" },
+  { english: "storybook", korean: "이야기 책" },
+  { english: "notebook", korean: "공책" },
+  { english: "marker", korean: "매직 펜, 마커" },
+  { english: "scissors", korean: "가위" },
+  { english: "glue", korean: "풀" },
+  { english: "uniform", korean: "교복, 유니폼" },
+  { english: "schoolbag", korean: "책가방" },
+  { english: "bus", korean: "버스" },
+  { english: "subway", korean: "지하철" }
+];
+
+const baseVocabE5 = [
+ vocabList: [
+  { english: "healthy", korean: "건강한" },
+  { english: "exercise", korean: "운동하다, 운동" },
+  { english: "delicious", korean: "맛있는" },
+  { english: "vegetable", korean: "채소" },
+  { english: "fruit", korean: "과일" },
+  { english: "salad", korean: "샐러드" },
+  { english: "hamburger", korean: "햄버거" },
+  { english: "sandwich", korean: "샌드위치" },
+  { english: "breakfast", korean: "아침 식사" },
+  { english: "dinner", korean: "저녁 식사" },
+
+  { english: "lunch", korean: "점심" },
+  { english: "snack", korean: "간식" },
+  { english: "juice", korean: "주스" },
+  { english: "water", korean: "물" },
+  { english: "milk", korean: "우유" },
+  { english: "rice", korean: "밥, 쌀" },
+  { english: "noodle", korean: "면, 국수" },
+  { english: "soup", korean: "수프, 국" },
+  { english: "chocolate", korean: "초콜릿" },
+  { english: "cookie", korean: "쿠키, 과자" },
+
+  { english: "environment", korean: "환경" },
+  { english: "recycle", korean: "재활용하다" },
+  { english: "pollution", korean: "오염" },
+  { english: "planet", korean: "행성, 지구" },
+  { english: "protect", korean: "보호하다" },
+  { english: "save", korean: "절약하다, 구하다" },
+  { english: "energy", korean: "에너지" },
+  { english: "trash", korean: "쓰레기" },
+  { english: "plastic", korean: "플라스틱" },
+  { english: "nature", korean: "자연" },
+
+  { english: "library", korean: "도서관" },
+  { english: "museum", korean: "박물관" },
+  { english: "history", korean: "역사" },
+  { english: "culture", korean: "문화" },
+  { english: "project", korean: "프로젝트" },
+  { english: "presentation", korean: "발표" },
+  { english: "report", korean: "보고서" },
+  { english: "experiment", korean: "실험" },
+  { english: "science", korean: "과학" },
+  { english: "subject", korean: "과목" },
+
+  { english: "future", korean: "미래" },
+  { english: "dream", korean: "꿈" },
+  { english: "talent", korean: "재능" },
+  { english: "hobby", korean: "취미" },
+  { english: "practice", korean: "연습하다, 연습" },
+  { english: "skill", korean: "기술, 능력" },
+  { english: "concert", korean: "콘서트" },
+  { english: "festival", korean: "축제" },
+  { english: "contest", korean: "경연, 대회" },
+  { english: "winner", korean: "우승자" },
+
+  { english: "travel", korean: "여행하다, 여행" },
+  { english: "trip", korean: "여행" },
+  { english: "journey", korean: "여정, 긴 여행" },
+  { english: "camping", korean: "캠핑" },
+  { english: "hiking", korean: "하이킹, 등산" },
+  { english: "adventure", korean: "모험" },
+  { english: "map", korean: "지도" },
+  { english: "ticket", korean: "표, 티켓" },
+  { english: "airport", korean: "공항" },
+  { english: "hotel", korean: "호텔" },
+
+  { english: "internet", korean: "인터넷" },
+  { english: "website", korean: "웹사이트" },
+  { english: "message", korean: "메시지" },
+  { english: "smartphone", korean: "스마트폰" },
+  { english: "video", korean: "비디오, 동영상" },
+  { english: "photo", korean: "사진" },
+  { english: "online", korean: "온라인의" },
+  { english: "upload", korean: "업로드하다" },
+  { english: "download", korean: "다운로드하다" },
+  { english: "password", korean: "비밀번호" },
+
+  { english: "excited", korean: "신이 난, 들뜬" },
+  { english: "bored", korean: "지루한" },
+  { english: "worried", korean: "걱정하는" },
+  { english: "careful", korean: "조심하는" },
+  { english: "kind", korean: "친절한" },
+  { english: "helpful", korean: "도움이 되는" },
+  { english: "friendly", korean: "친근한" },
+  { english: "funny", korean: "재미있는" },
+  { english: "shy", korean: "수줍은" },
+  { english: "brave", korean: "용감한" },
+
+  { english: "diary", korean: "일기" },
+  { english: "schedule", korean: "시간표, 일정" },
+  { english: "weekend", korean: "주말" },
+  { english: "weekday", korean: "평일" },
+  { english: "habit", korean: "습관" },
+  { english: "rule", korean: "규칙" },
+  { english: "chore", korean: "집안일" },
+  { english: "clean", korean: "청소하다, 깨끗한" },
+  { english: "wash", korean: "씻다, 빨다" },
+  { english: "recycle bin", korean: "재활용 통" },
+
+  { english: "traffic", korean: "교통" },
+  { english: "subway", korean: "지하철" },
+  { english: "crosswalk", korean: "횡단보도" },
+  { english: "safety", korean: "안전" },
+  { english: "accident", korean: "사고" },
+  { english: "doctor", korean: "의사" },
+  { english: "nurse", korean: "간호사" },
+  { english: "patient", korean: "환자, 참을성 있는" },
+  { english: "hospital", korean: "병원" },
+  { english: "medicine", korean: "약" }
+];
+
+const baseVocabE6 = [
+  vocabList: [
+  { english: "communication", korean: "소통, 의사소통" },
+  { english: "technology", korean: "기술" },
+  { english: "internet", korean: "인터넷" },
+  { english: "smartphone", korean: "스마트폰" },
+  { english: "digital", korean: "디지털의" },
+  { english: "online", korean: "온라인의" },
+  { english: "social media", korean: "소셜 미디어" },
+  { english: "global", korean: "세계적인" },
+  { english: "international", korean: "국제적인" },
+  { english: "culture", korean: "문화" },
+
+  { english: "tradition", korean: "전통" },
+  { english: "festival", korean: "축제" },
+  { english: "community", korean: "공동체, 지역 사회" },
+  { english: "neighbor", korean: "이웃" },
+  { english: "citizen", korean: "시민" },
+  { english: "society", korean: "사회" },
+  { english: "volunteer", korean: "자원봉사자, 봉사하다" },
+  { english: "service", korean: "봉사, 서비스" },
+  { english: "charity", korean: "자선" },
+  { english: "donation", korean: "기부" },
+
+  { english: "responsible", korean: "책임감 있는" },
+  { english: "creative", korean: "창의적인" },
+  { english: "confident", korean: "자신감 있는" },
+  { english: "polite", korean: "예의 바른" },
+  { english: "honest", korean: "정직한" },
+  { english: "brave", korean: "용감한" },
+  { english: "patient", korean: "참을성 있는" },
+  { english: "independent", korean: "독립적인" },
+  { english: "cooperative", korean: "협동적인" },
+  { english: "leader", korean: "리더, 지도자" },
+
+  { english: "success", korean: "성공" },
+  { english: "failure", korean: "실패" },
+  { english: "challenge", korean: "도전" },
+  { english: "effort", korean: "노력" },
+  { english: "opportunity", korean: "기회" },
+  { english: "goal", korean: "목표" },
+  { english: "plan", korean: "계획" },
+  { english: "decision", korean: "결정" },
+  { english: "career", korean: "진로, 직업" },
+  { english: "future", korean: "미래" },
+
+  { english: "environment", korean: "환경" },
+  { english: "pollution", korean: "오염" },
+  { english: "recycling", korean: "재활용" },
+  { english: "climate", korean: "기후" },
+  { english: "climate change", korean: "기후 변화" },
+  { english: "global warming", korean: "지구 온난화" },
+  { english: "energy", korean: "에너지" },
+  { english: "renewable energy", korean: "재생 에너지" },
+  { english: "scientist", korean: "과학자" },
+  { english: "experiment", korean: "실험" },
+
+  { english: "invention", korean: "발명" },
+  { english: "engineer", korean: "공학자, 기술자" },
+  { english: "programmer", korean: "프로그래머" },
+  { english: "designer", korean: "디자이너" },
+  { english: "artist", korean: "예술가" },
+  { english: "musician", korean: "음악가" },
+  { english: "writer", korean: "작가" },
+  { english: "athlete", korean: "운동선수" },
+  { english: "doctor", korean: "의사" },
+  { english: "journalist", korean: "기자" },
+
+  { english: "problem", korean: "문제" },
+  { english: "solution", korean: "해결책" },
+  { english: "idea", korean: "아이디어" },
+  { english: "opinion", korean: "의견" },
+  { english: "discussion", korean: "토론, 논의" },
+  { english: "communication skill", korean: "의사소통 능력" },
+  { english: "teamwork", korean: "팀워크, 협동" },
+  { english: "leadership", korean: "리더십" },
+  { english: "critical thinking", korean: "비판적 사고" },
+  { english: "creativity", korean: "창의성" },
+
+  { english: "poverty", korean: "빈곤" },
+  { english: "peace", korean: "평화" },
+  { english: "war", korean: "전쟁" },
+  { english: "human rights", korean: "인권" },
+  { english: "equality", korean: "평등" },
+  { english: "diversity", korean: "다양성" },
+  { english: "discrimination", korean: "차별" },
+  { english: "refugee", korean: "난민" },
+  { english: "environment activist", korean: "환경 운동가" },
+  { english: "recycling campaign", korean: "재활용 캠페인" },
+
+  { english: "news", korean: "뉴스" },
+  { english: "advertisement", korean: "광고" },
+  { english: "information", korean: "정보" },
+  { english: "fake news", korean: "가짜 뉴스" },
+  { english: "fact", korean: "사실" },
+  { english: "rumor", korean: "소문" },
+  { english: "survey", korean: "설문 조사" },
+  { english: "data", korean: "데이터" },
+  { english: "research", korean: "연구" },
+  { english: "report", korean: "보고서" },
+
+  { english: "stress", korean: "스트레스" },
+  { english: "relax", korean: "쉬다, 긴장을 풀다" },
+  { english: "balance", korean: "균형" },
+  { english: "daily routine", korean: "일상적인 생활 패턴" },
+  { english: "habit", korean: "습관" },
+  { english: "health", korean: "건강" },
+  { english: "lifestyle", korean: "생활 방식" },
+  { english: "relationship", korean: "관계" },
+  { english: "promise", korean: "약속" },
+  { english: "responsibility", korean: "책임" }
+];
+
+const baseVocabM1 = [
+  { "english": "able", "korean": "~할 수 있는" },
+  { "english": "become", "korean": "~이 되다" },
+  { "english": "begin", "korean": "시작하다" },
+  { "english": "believe", "korean": "믿다" },
+  { "english": "better", "korean": "더 좋은" },
+  { "english": "between", "korean": "~사이에" },
+  { "english": "break", "korean": "깨다, 부수다" },
+  { "english": "build", "korean": "건설하다" },
+  { "english": "buy", "korean": "사다" },
+  { "english": "call", "korean": "부르다, 전화하다" },
+  { "english": "carry", "korean": "운반하다" },
+  { "english": "catch", "korean": "잡다" },
+  { "english": "change", "korean": "변화(시키다)" },
+  { "english": "choose", "korean": "선택하다" },
+  { "english": "clean", "korean": "깨끗한" },
+  { "english": "close", "korean": "닫다, 가까운" },
+  { "english": "come", "korean": "오다" },
+  { "english": "cost", "korean": "비용, 가격" },
+  { "english": "count", "korean": "세다" },
+  { "english": "cross", "korean": "건너다" },
+  { "english": "decide", "korean": "결정하다" },
+  { "english": "difficult", "korean": "어려운" },
+  { "english": "drink", "korean": "마시다" },
+  { "english": "drive", "korean": "운전하다" },
+  { "english": "enough", "korean": "충분한" },
+  { "english": "enter", "korean": "들어가다" },
+  { "english": "even", "korean": "심지어" },
+  { "english": "ever", "korean": "언제나" },
+  { "english": "explain", "korean": "설명하다" },
+  { "english": "face", "korean": "얼굴, 직면하다" },
+  { "english": "fail", "korean": "실패하다" },
+  { "english": "far", "korean": "먼" },
+  { "english": "fast", "korean": "빠른, 빨리" },
+  { "english": "fill", "korean": "채우다" },
+  { "english": "find", "korean": "찾다" },
+  { "english": "finish", "korean": "끝내다" },
+  { "english": "follow", "korean": "따르다" },
+  { "english": "forget", "korean": "잊다" },
+  { "english": "free", "korean": "자유로운" },
+  { "english": "full", "korean": "가득 찬" },
+  { "english": "give", "korean": "주다" },
+  { "english": "go", "korean": "가다" },
+  { "english": "great", "korean": "훌륭한" },
+  { "english": "happen", "korean": "발생하다" },
+  { "english": "happy", "korean": "행복한" },
+  { "english": "hard", "korean": "어려운, 열심히" },
+  { "english": "have", "korean": "가지다" },
+  { "english": "hear", "korean": "듣다" },
+  { "english": "help", "korean": "돕다" },
+  { "english": "high", "korean": "높은" },
+  { "english": "hope", "korean": "희망하다" },
+  { "english": "huge", "korean": "거대한" },
+  { "english": "important", "korean": "중요한" },
+  { "english": "include", "korean": "포함하다" },
+  { "english": "idea", "korean": "생각" },
+  { "english": "information", "korean": "정보" },
+  { "english": "interest", "korean": "흥미, 관심" },
+  { "english": "invent", "korean": "발명하다" },
+  { "english": "join", "korean": "참여하다" },
+  { "english": "keep", "korean": "유지하다" },
+  { "english": "know", "korean": "알다" },
+  { "english": "language", "korean": "언어" },
+  { "english": "learn", "korean": "배우다" },
+  { "english": "leave", "korean": "떠나다, 남기다" },
+  { "english": "lend", "korean": "빌려주다" },
+  { "english": "less", "korean": "더 적은" },
+  { "english": "letter", "korean": "편지, 글자" },
+  { "english": "light", "korean": "빛, 가벼운" },
+  { "english": "listen", "korean": "듣다" },
+  { "english": "live", "korean": "살다" },
+  { "english": "long", "korean": "긴, 오래" },
+  { "english": "look", "korean": "보다, 보이다" },
+  { "english": "lose", "korean": "잃다, 지다" },
+  { "english": "love", "korean": "사랑(하다)" },
+  { "english": "main", "korean": "주요한" },
+  { "english": "make", "korean": "만들다" },
+  { "english": "many", "korean": "많은" },
+  { "english": "matter", "korean": "문제, 중요하다" },
+  { "english": "mean", "korean": "의미하다" },
+  { "english": "meet", "korean": "만나다" },
+  { "english": "mind", "korean": "마음, 신경 쓰다" },
+  { "english": "minute", "korean": "분(時間)" },
+  { "english": "miss", "korean": "놓치다, 그리워하다" },
+  { "english": "month", "korean": "달, 월" },
+  { "english": "more", "korean": "더 많은" },
+  { "english": "most", "korean": "대부분" },
+  { "english": "move", "korean": "움직이다" },
+  { "english": "much", "korean": "많은 (양)" },
+  { "english": "need", "korean": "필요(로 하다)" },
+  { "english": "never", "korean": "결코 ~않다" },
+  { "english": "news", "korean": "소식, 뉴스" },
+  { "english": "nice", "korean": "좋은, 친절한" },
+  { "english": "night", "korean": "밤, 야간" },
+  { "english": "north", "korean": "북쪽" },
+  { "english": "note", "korean": "메모, 주목하다" },
+  { "english": "nothing", "korean": "아무것도 ~없음" },
+  { "english": "ocean", "korean": "대양, 바다" },
+  { "english": "often", "korean": "자주, 종종" },
+  { "english": "old", "korean": "늙은, 오래된" },
+  { "english": "once", "korean": "한 번, 옛날에" },
+  { "english": "open", "korean": "열다, 열린" },
+  { "english": "order", "korean": "주문(하다), 순서" },
+  { "english": "outside", "korean": "밖에, 외부" },
+  { "english": "over", "korean": "~위에, 넘어" },
+  { "english": "own", "korean": "소유하다, 자신의" },
+  { "english": "parent", "korean": "부모" },
+  { "english": "part", "korean": "부분, 역할" },
+  { "english": "party", "korean": "파티, 정당" },
+  { "english": "pass", "korean": "지나가다, 합격하다" },
+  { "english": "past", "korean": "과거, 지난" },
+  { "english": "pay", "korean": "지불하다" },
+  { "english": "people", "korean": "사람들" },
+  { "english": "person", "korean": "사람, 개인" },
+  { "english": "place", "korean": "장소, 놓다" },
+  { "english": "plan", "korean": "계획(하다)" },
+  { "english": "play", "korean": "놀다, 연주하다" },
+  { "english": "point", "korean": "점, 요점, 가리키다" },
+  { "english": "police", "korean": "경찰" },
+  { "english": "poor", "korean": "가난한, 불쌍한" },
+  { "english": "possible", "korean": "가능한" },
+  { "english": "power", "korean": "힘, 능력" },
+  { "english": "practice", "korean": "연습(하다)" },
+  { "english": "present", "korean": "현재, 선물, 참석한" },
+  { "english": "press", "korean": "누르다, 언론" },
+  { "english": "pretty", "korean": "예쁜, 꽤" },
+  { "english": "price", "korean": "가격, 값" },
+  { "english": "problem", "korean": "문제, 곤란" },
+  { "english": "program", "korean": "프로그램" },
+  { "english": "promise", "korean": "약속(하다)" },
+  { "english": "pull", "korean": "당기다, 끌다" },
+  { "english": "push", "korean": "밀다" },
+  { "english": "put", "korean": "놓다, 두다" },
+  { "english": "quick", "korean": "빠른, 신속한" },
+  { "english": "quiet", "korean": "조용한, 고요한" },
+  { "english": "radio", "korean": "라디오" },
+  { "english": "rain", "korean": "비(가 오다)" },
+  { "english": "read", "korean": "읽다" },
+  { "english": "ready", "korean": "준비된" },
+  { "english": "real", "korean": "진짜의, 실제의" },
+  { "english": "receive", "korean": "받다, 수령하다" },
+  { "english": "remember", "korean": "기억하다, 상기하다" },
+  { "english": "return", "korean": "돌아오다, 반환하다" },
+  { "english": "rich", "korean": "부유한, 풍부한" },
+  { "english": "ride", "korean": "타다, 탑승하다" },
+  { "english": "right", "korean": "옳은, 오른쪽" },
+  { "english": "ring", "korean": "반지, 울리다" },
+  { "english": "rise", "korean": "오르다, 떠오르다" },
+  { "english": "road", "korean": "길, 도로" },
+  { "english": "rock", "korean": "바위, 암석" },
+  { "english": "roll", "korean": "구르다, 말다" },
+  { "english": "room", "korean": "방, 공간" },
+  { "english": "round", "korean": "둥근, 둥글게" },
+  { "english": "rule", "korean": "규칙, 지배하다" },
+  { "english": "run", "korean": "달리다, 흐르다" },
+  { "english": "safe", "korean": "안전한, 금고" },
+  { "english": "same", "korean": "같은, 동일한" },
+  { "english": "save", "korean": "구하다, 저축하다" },
+  { "english": "say", "korean": "말하다, 이야기하다" },
+  { "english": "school", "korean": "학교" },
+  { "english": "science", "korean": "과학" },
+  { "english": "score", "korean": "점수, 득점하다" },
+  { "english": "sea", "korean": "바다, 해양" },
+  { "english": "second", "korean": "두 번째, 초(時間)" },
+  { "english": "see", "korean": "보다, 알다" },
+  { "english": "seem", "korean": "~인 것 같다" },
+  { "english": "sell", "korean": "팔다, 판매하다" },
+  { "english": "send", "korean": "보내다, 발송하다" },
+  { "english": "sense", "korean": "감각, 의미" },
+  { "english": "set", "korean": "놓다, 세트" },
+  { "english": "several", "korean": "몇몇의, 여러" },
+  { "english": "shape", "korean": "모양, 형태" },
+  { "english": "share", "korean": "공유하다, 나누다" },
+  { "english": "ship", "korean": "배, 선박" },
+  { "english": "short", "korean": "짧은, 부족한" },
+  { "english": "show", "korean": "보여주다, 공연" },
+  { "english": "side", "korean": "옆, 측면" },
+  { "english": "sign", "korean": "신호, 표시, 서명하다" },
+  { "english": "simple", "korean": "간단한, 단순한" },
+  { "english": "sing", "korean": "노래하다" },
+  { "english": "sister", "korean": "자매, 누나, 여동생" }
+];
+
+const baseVocabM2 = [
+  { "english": "ability", "korean": "능력, 재능" },
+  { "english": "abroad", "korean": "해외로, 외국에" },
+  { "english": "absent", "korean": "결석한, 부재한" },
+  { "english": "accept", "korean": "수락하다, 받아들이다" },
+  { "english": "achieve", "korean": "달성하다, 성취하다" },
+  { "english": "action", "korean": "행동, 조치" },
+  { "english": "active", "korean": "활동적인, 적극적인" },
+  { "english": "actor", "korean": "배우 (남)" },
+  { "english": "actress", "korean": "배우 (여)" },
+  { "english": "actual", "korean": "실제의, 사실상의" },
+  { "english": "add", "korean": "더하다, 추가하다" },
+  { "english": "address", "korean": "주소, 연설하다" },
+  { "english": "adult", "korean": "성인, 어른" },
+  { "english": "advantage", "korean": "장점, 이점" },
+  { "english": "advertisement", "korean": "광고" },
+  { "english": "affect", "korean": "~에 영향을 미치다" },
+  { "english": "afraid", "korean": "두려워하는, 걱정하는" },
+  { "english": "against", "korean": "~에 반대하여, ~에 기대어" },
+  { "english": "agree", "korean": "동의하다, 합의하다" },
+  { "english": "ahead", "korean": "앞서서, 미리" },
+  { "english": "aim", "korean": "목표, 겨냥하다" },
+  { "english": "airplane", "korean": "비행기" },
+  { "english": "alive", "korean": "살아있는, 생존한" },
+  { "english": "allow", "korean": "허락하다, 용납하다" },
+  { "english": "almost", "korean": "거의, 대략" },
+  { "english": "alone", "korean": "혼자, 홀로" },
+  { "english": "along", "korean": "~을 따라, 함께" },
+  { "english": "already", "korean": "이미, 벌써" },
+  { "english": "although", "korean": "비록 ~일지라도" },
+  { "english": "always", "korean": "항상, 언제나" },
+  { "english": "among", "korean": "~사이에 (셋 이상)" },
+  { "english": "amount", "korean": "양, 액수" },
+  { "english": "ancient", "korean": "고대의, 아주 오래된" },
+  { "english": "angle", "korean": "각도, 관점" },
+  { "english": "announce", "korean": "발표하다, 알리다" },
+  { "english": "another", "korean": "다른 하나의, 또 하나의" },
+  { "english": "answer", "korean": "대답(하다), 정답" },
+  { "english": "anybody", "korean": "아무나, 누구든" },
+  { "english": "anything", "korean": "무엇이든, 아무거나" },
+  { "english": "anywhere", "korean": "어디든지" },
+  { "english": "apart", "korean": "떨어져서, 분리된" },
+  { "english": "appear", "korean": "나타나다, ~처럼 보이다" },
+  { "english": "area", "korean": "지역, 구역" },
+  { "english": "argue", "korean": "논쟁하다, 다투다" },
+  { "english": "arm", "korean": "팔, 무기" },
+  { "english": "around", "korean": "~주위에, 대략" },
+  { "english": "arrange", "korean": "배열하다, 준비하다" },
+  { "english": "arrive", "korean": "도착하다" },
+  { "english": "art", "korean": "예술, 미술" },
+  { "english": "artist", "korean": "예술가, 화가" },
+  { "english": "asleep", "korean": "잠든, 자고 있는" },
+  { "english": "assistant", "korean": "조수, 보조원" },
+  { "english": "assume", "korean": "가정하다, 추정하다" },
+  { "english": "atmosphere", "korean": "대기, 분위기" },
+  { "english": "attach", "korean": "붙이다, 첨부하다" },
+  { "english": "attack", "korean": "공격(하다)" },
+  { "english": "attend", "korean": "참석하다, 출석하다" },
+  { "english": "attention", "korean": "주의, 집중" },
+  { "english": "attitude", "korean": "태도, 자세" },
+  { "english": "attractive", "korean": "매력적인, 흥미를 끄는" },
+  { "english": "audience", "korean": "청중, 관객" },
+  { "english": "author", "korean": "저자, 작가" },
+  { "english": "available", "korean": "이용 가능한, 시간이 있는" },
+  { "english": "average", "korean": "평균, 보통의" },
+  { "english": "avoid", "korean": "피하다, 회피하다" },
+  { "english": "awake", "korean": "깨어있는, 깨우다" },
+  { "english": "away", "korean": "떨어져서, 멀리" },
+  { "english": "back", "korean": "뒤로, 등, 돌아오다" },
+  { "english": "background", "korean": "배경, 출신" },
+  { "english": "badly", "korean": "나쁘게, 심하게" },
+  { "english": "balance", "korean": "균형, 잔고" },
+  { "english": "band", "korean": "밴드, 끈, 악단" },
+  { "english": "barely", "korean": "간신히, 겨우" },
+  { "english": "base", "korean": "기초, 토대, 근거지" },
+  { "english": "basic", "korean": "기본적인, 근본적인" },
+  { "english": "basis", "korean": "기반, 근거" },
+  { "english": "battery", "korean": "건전지, 배터리" },
+  { "english": "battle", "korean": "전투, 싸움" },
+  { "english": "beach", "korean": "해변, 바닷가" },
+  { "english": "bear", "korean": "곰, 참다, 견디다" },
+  { "english": "beat", "korean": "치다, 이기다, 박자" },
+  { "english": "beautiful", "korean": "아름다운, 예쁜" },
+  { "english": "bed", "korean": "침대, 잠자리" },
+  { "english": "beef", "korean": "소고기" },
+  { "english": "before", "korean": "~전에, ~앞에" },
+  { "english": "behavior", "korean": "행동, 태도" },
+  { "english": "behind", "korean": "~뒤에, 뒤떨어져" },
+  { "english": "belong", "korean": "~에 속하다, ~의 것이다" },
+  { "english": "benefit", "korean": "혜택, 이익" },
+  { "english": "beside", "korean": "~옆에, 나란히" },
+  { "english": "beyond", "korean": "~을 넘어서, 저편에" },
+  { "english": "bird", "korean": "새" },
+  { "english": "birth", "korean": "탄생, 출생" },
+  { "english": "birthday", "korean": "생일" },
+  { "english": "blackboard", "korean": "칠판" },
+  { "english": "blanket", "korean": "담요" },
+  { "english": "blind", "korean": "눈먼, 맹인의" },
+  { "english": "blood", "korean": "피, 혈액" },
+  { "english": "blow", "korean": "불다, 강타" },
+  { "english": "board", "korean": "판자, 탑승하다, 이사회" },
+  { "english": "boat", "korean": "배, 보트" },
+  { "english": "boil", "korean": "끓이다, 끓다" },
+  { "english": "bomb", "korean": "폭탄, 폭격하다" },
+  { "english": "bone", "korean": "뼈, 골격" },
+  { "english": "book", "korean": "책, 예약하다" },
+  { "english": "border", "korean": "국경, 가장자리" },
+  { "english": "born", "korean": "태어난 (~be born)" },
+  { "english": "borrow", "korean": "빌리다, 차용하다" },
+  { "english": "boss", "korean": "상사, 사장" },
+  { "english": "bottom", "korean": "맨 아래, 바닥" },
+  { "english": "bowl", "korean": "그릇, 사발" },
+  { "english": "box", "korean": "상자, 상자에 넣다" },
+  { "english": "brain", "korean": "뇌, 두뇌" },
+  { "english": "branch", "korean": "나뭇가지, 지점, 부서" },
+  { "english": "brave", "korean": "용감한, 용기있는" },
+  { "english": "bridge", "korean": "다리, 교량" },
+  { "english": "bright", "korean": "밝은, 영리한" },
+  { "english": "bring", "korean": "가져오다, 데려오다" },
+  { "english": "broad", "korean": "넓은, 광범위한" },
+  { "english": "brother", "korean": "형제, 오빠, 남동생" },
+  { "english": "brown", "korean": "갈색의" },
+  { "english": "brush", "korean": "붓, 솔질하다" },
+  { "english": "bucket", "korean": "양동이" },
+  { "english": "budge", "korean": "약간 움직이다" },
+  { "english": "budget", "korean": "예산" },
+  { "english": "bullet", "korean": "총알" },
+  { "english": "burn", "korean": "타다, 태우다, 화상" },
+  { "english": "burst", "korean": "터지다, 파열" },
+  { "english": "bury", "korean": "묻다, 매장하다" },
+  { "english": "bus", "korean": "버스" },
+  { "english": "business", "korean": "사업, 업무, 장사" },
+  { "english": "busy", "korean": "바쁜, 통화 중인" },
+  { "english": "butter", "korean": "버터" },
+  { "english": "button", "korean": "단추, 버튼" },
+  { "english": "cabbage", "korean": "양배추" },
+  { "english": "cabinet", "korean": "장식장, 내각" },
+  { "english": "cafeteria", "korean": "구내식당, 카페테리아" },
+  { "english": "cage", "korean": "우리, 새장" },
+  { "english": "cake", "korean": "케이크" },
+  { "english": "calculate", "korean": "계산하다, 산출하다" },
+  { "english": "calendar", "korean": "달력, 일정표" },
+  { "english": "calf", "korean": "송아지, 종아리" },
+  { "english": "calm", "korean": "고요한, 침착한" },
+  { "english": "camera", "korean": "카메라" },
+  { "english": "camp", "korean": "캠프, 야영(하다)" },
+  { "english": "campus", "korean": "캠퍼스, 교정" },
+  { "english": "can", "korean": "~할 수 있다, 캔" },
+  { "english": "cancel", "korean": "취소하다, 무효로 하다" },
+  { "english": "cancer", "korean": "암" },
+  { "english": "candle", "korean": "양초" },
+  { "english": "candy", "korean": "사탕" },
+  { "english": "cap", "korean": "모자 (챙 없는)" },
+  { "english": "capital", "korean": "수도, 자본, 대문자" },
+  { "english": "captain", "korean": "선장, 기장, 주장" },
+  { "english": "car", "korean": "차, 자동차" },
+  { "english": "card", "korean": "카드, 엽서" },
+  { "english": "care", "korean": "돌봄, 주의, 신경 쓰다" },
+  { "english": "career", "korean": "직업, 경력" },
+  { "english": "careful", "korean": "조심스러운, 주의 깊은" },
+  { "english": "carpet", "korean": "양탄자, 카펫" },
+  { "english": "carrot", "korean": "당근" },
+  { "english": "cartoon", "korean": "만화, 애니메이션" },
+  { "english": "case", "korean": "경우, 사례, 상자" },
+  { "english": "cash", "korean": "현금" },
+  { "english": "castle", "korean": "성, 요새" },
+  { "english": "cat", "korean": "고양이" },
+  { "english": "catch", "korean": "잡다, 붙잡다" },
+  { "english": "cause", "korean": "원인, 야기하다" },
+  { "english": "ceiling", "korean": "천장" },
+  { "english": "celebrate", "korean": "축하하다, 기념하다" },
+  { "english": "center", "korean": "중심, 중앙" },
+  { "english": "century", "korean": "세기 (100년)" },
+  { "english": "certain", "korean": "확실한, 특정한" },
+  { "english": "chain", "korean": "사슬, 체인, 연속" },
+  { "english": "chair", "korean": "의자" },
+  { "english": "chalk", "korean": "분필" },
+  { "english": "champion", "korean": "우승자, 챔피언" },
+  { "english": "chance", "korean": "기회, 가능성, 우연" },
+  { "english": "channel", "korean": "수로, 채널, 경로" },
+  { "english": "chapter", "korean": "장 (책의), 챕터" },
+  { "english": "character", "korean": "성격, 인물, 문자" },
+  { "english": "charge", "korean": "요금, 책임, 청구하다, 충전하다" },
+  { "english": "chart", "korean": "도표, 차트" },
+  { "english": "cheap", "korean": "값싼, 저렴한" },
+  { "english": "check", "korean": "확인하다, 점검하다, 수표" },
+  { "english": "cheek", "korean": "뺨, 볼" },
+  { "english": "cheer", "korean": "응원하다, 환호하다" },
+  { "english": "cheese", "korean": "치즈" },
+  { "english": "chef", "korean": "주방장, 요리사" },
+  { "english": "chemistry", "korean": "화학" },
+  { "english": "cherry", "korean": "체리" },
+  { "english": "chest", "korean": "가슴, 궤짝" },
+  { "english": "chicken", "korean": "닭, 닭고기" },
+  { "english": "chief", "korean": "주요한, 우두머리" },
+  { "english": "child", "korean": "아이, 어린이" },
+  { "english": "chimney", "korean": "굴뚝" },
+  { "english": "chin", "korean": "턱" },
+  { "english": "chocolate", "korean": "초콜릿" },
+  { "english": "choice", "korean": "선택, 결정" },
+  { "english": "chopstick", "korean": "젓가락" },
+  { "english": "church", "korean": "교회" },
+  { "english": "circle", "korean": "원, 동그라미" },
+  { "english": "citizen", "korean": "시민, 주민" },
+  { "english": "city", "korean": "도시" },
+  { "english": "clap", "korean": "박수치다, 손뼉을 치다" },
+  { "english": "classmate", "korean": "학급 친구, 반 친구" },
+  { "english": "classroom", "korean": "교실, 학급" },
+  { "english": "climate", "korean": "기후, 풍토" }
+];
+
+const baseVocabM3 = [
+  [
+  { "english": "ability", "korean": "능력, 재능" },
+  { "english": "abroad", "korean": "해외로, 외국에" },
+  { "english": "absent", "korean": "결석한, 부재한" },
+  { "english": "accept", "korean": "수락하다, 받아들이다" },
+  { "english": "achieve", "korean": "달성하다, 성취하다" },
+  { "english": "action", "korean": "행동, 조치" },
+  { "english": "active", "korean": "활동적인, 적극적인" },
+  { "english": "actor", "korean": "배우 (남)" },
+  { "english": "actress", "korean": "배우 (여)" },
+  { "english": "actual", "korean": "실제의, 사실상의" },
+  { "english": "add", "korean": "더하다, 추가하다" },
+  { "english": "address", "korean": "주소, 연설하다" },
+  { "english": "adult", "korean": "성인, 어른" },
+  { "english": "advantage", "korean": "장점, 이점" },
+  { "english": "advertisement", "korean": "광고" },
+  { "english": "affect", "korean": "~에 영향을 미치다" },
+  { "english": "afraid", "korean": "두려워하는, 걱정하는" },
+  { "english": "against", "korean": "~에 반대하여, ~에 기대어" },
+  { "english": "agree", "korean": "동의하다, 합의하다" },
+  { "english": "ahead", "korean": "앞서서, 미리" },
+  { "english": "aim", "korean": "목표, 겨냥하다" },
+  { "english": "airplane", "korean": "비행기" },
+  { "english": "alive", "korean": "살아있는, 생존한" },
+  { "english": "allow", "korean": "허락하다, 용납하다" },
+  { "english": "almost", "korean": "거의, 대략" },
+  { "english": "alone", "korean": "혼자, 홀로" },
+  { "english": "along", "korean": "~을 따라, 함께" },
+  { "english": "already", "korean": "이미, 벌써" },
+  { "english": "although", "korean": "비록 ~일지라도" },
+  { "english": "always", "korean": "항상, 언제나" },
+  { "english": "among", "korean": "~사이에 (셋 이상)" },
+  { "english": "amount", "korean": "양, 액수" },
+  { "english": "ancient", "korean": "고대의, 아주 오래된" },
+  { "english": "angle", "korean": "각도, 관점" },
+  { "english": "announce", "korean": "발표하다, 알리다" },
+  { "english": "another", "korean": "다른 하나의, 또 하나의" },
+  { "english": "answer", "korean": "대답(하다), 정답" },
+  { "english": "anybody", "korean": "아무나, 누구든" },
+  { "english": "anything", "korean": "무엇이든, 아무거나" },
+  { "english": "anywhere", "korean": "어디든지" },
+  { "english": "apart", "korean": "떨어져서, 분리된" },
+  { "english": "appear", "korean": "나타나다, ~처럼 보이다" },
+  { "english": "area", "korean": "지역, 구역" },
+  { "english": "argue", "korean": "논쟁하다, 다투다" },
+  { "english": "arm", "korean": "팔, 무기" },
+  { "english": "around", "korean": "~주위에, 대략" },
+  { "english": "arrange", "korean": "배열하다, 준비하다" },
+  { "english": "arrive", "korean": "도착하다" },
+  { "english": "art", "korean": "예술, 미술" },
+  { "english": "artist", "korean": "예술가, 화가" },
+  { "english": "asleep", "korean": "잠든, 자고 있는" },
+  { "english": "assistant", "korean": "조수, 보조원" },
+  { "english": "assume", "korean": "가정하다, 추정하다" },
+  { "english": "atmosphere", "korean": "대기, 분위기" },
+  { "english": "attach", "korean": "붙이다, 첨부하다" },
+  { "english": "attack", "korean": "공격(하다)" },
+  { "english": "attend", "korean": "참석하다, 출석하다" },
+  { "english": "attention", "korean": "주의, 집중" },
+  { "english": "attitude", "korean": "태도, 자세" },
+  { "english": "attractive", "korean": "매력적인, 흥미를 끄는" },
+  { "english": "audience", "korean": "청중, 관객" },
+  { "english": "author", "korean": "저자, 작가" },
+  { "english": "available", "korean": "이용 가능한, 시간이 있는" },
+  { "english": "average", "korean": "평균, 보통의" },
+  { "english": "avoid", "korean": "피하다, 회피하다" },
+  { "english": "awake", "korean": "깨어있는, 깨우다" },
+  { "english": "away", "korean": "떨어져서, 멀리" },
+  { "english": "back", "korean": "뒤로, 등, 돌아오다" },
+  { "english": "background", "korean": "배경, 출신" },
+  { "english": "badly", "korean": "나쁘게, 심하게" },
+  { "english": "balance", "korean": "균형, 잔고" },
+  { "english": "band", "korean": "밴드, 끈, 악단" },
+  { "english": "barely", "korean": "간신히, 겨우" },
+  { "english": "base", "korean": "기초, 토대, 근거지" },
+  { "english": "basic", "korean": "기본적인, 근본적인" },
+  { "english": "basis", "korean": "기반, 근거" },
+  { "english": "battery", "korean": "건전지, 배터리" },
+  { "english": "battle", "korean": "전투, 싸움" },
+  { "english": "beach", "korean": "해변, 바닷가" },
+  { "english": "bear", "korean": "곰, 참다, 견디다" },
+  { "english": "beat", "korean": "치다, 이기다, 박자" },
+  { "english": "beautiful", "korean": "아름다운, 예쁜" },
+  { "english": "bed", "korean": "침대, 잠자리" },
+  { "english": "beef", "korean": "소고기" },
+  { "english": "before", "korean": "~전에, ~앞에" },
+  { "english": "behavior", "korean": "행동, 태도" },
+  { "english": "behind", "korean": "~뒤에, 뒤떨어져" },
+  { "english": "belong", "korean": "~에 속하다, ~의 것이다" },
+  { "english": "benefit", "korean": "혜택, 이익" },
+  { "english": "beside", "korean": "~옆에, 나란히" },
+  { "english": "beyond", "korean": "~을 넘어서, 저편에" },
+  { "english": "bird", "korean": "새" },
+  { "english": "birth", "korean": "탄생, 출생" },
+  { "english": "birthday", "korean": "생일" },
+  { "english": "blackboard", "korean": "칠판" },
+  { "english": "blanket", "korean": "담요" },
+  { "english": "blind", "korean": "눈먼, 맹인의" },
+  { "english": "blood", "korean": "피, 혈액" },
+  { "english": "blow", "korean": "불다, 강타" },
+  { "english": "board", "korean": "판자, 탑승하다, 이사회" },
+  { "english": "boat", "korean": "배, 보트" },
+  { "english": "boil", "korean": "끓이다, 끓다" },
+  { "english": "bomb", "korean": "폭탄, 폭격하다" },
+  { "english": "bone", "korean": "뼈, 골격" },
+  { "english": "book", "korean": "책, 예약하다" },
+  { "english": "border", "korean": "국경, 가장자리" },
+  { "english": "born", "korean": "태어난 (~be born)" },
+  { "english": "borrow", "korean": "빌리다, 차용하다" },
+  { "english": "boss", "korean": "상사, 사장" },
+  { "english": "bottom", "korean": "맨 아래, 바닥" },
+  { "english": "bowl", "korean": "그릇, 사발" },
+  { "english": "box", "korean": "상자, 상자에 넣다" },
+  { "english": "brain", "korean": "뇌, 두뇌" },
+  { "english": "branch", "korean": "나뭇가지, 지점, 부서" },
+  { "english": "brave", "korean": "용감한, 용기있는" },
+  { "english": "bridge", "korean": "다리, 교량" },
+  { "english": "bright", "korean": "밝은, 영리한" },
+  { "english": "bring", "korean": "가져오다, 데려오다" },
+  { "english": "broad", "korean": "넓은, 광범위한" },
+  { "english": "brother", "korean": "형제, 오빠, 남동생" },
+  { "english": "brown", "korean": "갈색의" },
+  { "english": "brush", "korean": "붓, 솔질하다" },
+  { "english": "bucket", "korean": "양동이" },
+  { "english": "budge", "korean": "약간 움직이다" },
+  { "english": "budget", "korean": "예산" },
+  { "english": "bullet", "korean": "총알" },
+  { "english": "burn", "korean": "타다, 태우다, 화상" },
+  { "english": "burst", "korean": "터지다, 파열" },
+  { "english": "bury", "korean": "묻다, 매장하다" },
+  { "english": "bus", "korean": "버스" },
+  { "english": "business", "korean": "사업, 업무, 장사" },
+  { "english": "busy", "korean": "바쁜, 통화 중인" },
+  { "english": "butter", "korean": "버터" },
+  { "english": "button", "korean": "단추, 버튼" },
+  { "english": "cabbage", "korean": "양배추" },
+  { "english": "cabinet", "korean": "장식장, 내각" },
+  { "english": "cafeteria", "korean": "구내식당, 카페테리아" },
+  { "english": "cage", "korean": "우리, 새장" },
+  { "english": "cake", "korean": "케이크" },
+  { "english": "calculate", "korean": "계산하다, 산출하다" },
+  { "english": "calendar", "korean": "달력, 일정표" },
+  { "english": "calf", "korean": "송아지, 종아리" },
+  { "english": "calm", "korean": "고요한, 침착한" },
+  { "english": "camera", "korean": "카메라" },
+  { "english": "camp", "korean": "캠프, 야영(하다)" },
+  { "english": "campus", "korean": "캠퍼스, 교정" },
+  { "english": "can", "korean": "~할 수 있다, 캔" },
+  { "english": "cancel", "korean": "취소하다, 무효로 하다" },
+  { "english": "cancer", "korean": "암" },
+  { "english": "candle", "korean": "양초" },
+  { "english": "candy", "korean": "사탕" },
+  { "english": "cap", "korean": "모자 (챙 없는)" },
+  { "english": "capital", "korean": "수도, 자본, 대문자" },
+  { "english": "captain", "korean": "선장, 기장, 주장" },
+  { "english": "car", "korean": "차, 자동차" },
+  { "english": "card", "korean": "카드, 엽서" },
+  { "english": "care", "korean": "돌봄, 주의, 신경 쓰다" },
+  { "english": "career", "korean": "직업, 경력" },
+  { "english": "careful", "korean": "조심스러운, 주의 깊은" },
+  { "english": "carpet", "korean": "양탄자, 카펫" },
+  { "english": "carrot", "korean": "당근" },
+  { "english": "cartoon", "korean": "만화, 애니메이션" },
+  { "english": "case", "korean": "경우, 사례, 상자" },
+  { "english": "cash", "korean": "현금" },
+  { "english": "castle", "korean": "성, 요새" },
+  { "english": "cat", "korean": "고양이" },
+  { "english": "catch", "korean": "잡다, 붙잡다" },
+  { "english": "cause", "korean": "원인, 야기하다" },
+  { "english": "ceiling", "korean": "천장" },
+  { "english": "celebrate", "korean": "축하하다, 기념하다" },
+  { "english": "center", "korean": "중심, 중앙" },
+  { "english": "century", "korean": "세기 (100년)" },
+  { "english": "certain", "korean": "확실한, 특정한" },
+  { "english": "chain", "korean": "사슬, 체인, 연속" },
+  { "english": "chair", "korean": "의자" },
+  { "english": "chalk", "korean": "분필" },
+  { "english": "champion", "korean": "우승자, 챔피언" },
+  { "english": "chance", "korean": "기회, 가능성, 우연" },
+  { "english": "channel", "korean": "수로, 채널, 경로" },
+  { "english": "chapter", "korean": "장 (책의), 챕터" },
+  { "english": "character", "korean": "성격, 인물, 문자" },
+  { "english": "charge", "korean": "요금, 책임, 청구하다, 충전하다" },
+  { "english": "chart", "korean": "도표, 차트" },
+  { "english": "cheap", "korean": "값싼, 저렴한" },
+  { "english": "check", "korean": "확인하다, 점검하다, 수표" },
+  { "english": "cheek", "korean": "뺨, 볼" },
+  { "english": "cheer", "korean": "응원하다, 환호하다" },
+  { "english": "cheese", "korean": "치즈" },
+  { "english": "chef", "korean": "주방장, 요리사" },
+  { "english": "chemistry", "korean": "화학" },
+  { "english": "cherry", "korean": "체리" },
+  { "english": "chest", "korean": "가슴, 궤짝" },
+  { "english": "chicken", "korean": "닭, 닭고기" },
+  { "english": "chief", "korean": "주요한, 우두머리" },
+  { "english": "child", "korean": "아이, 어린이" },
+  { "english": "chimney", "korean": "굴뚝" },
+  { "english": "chin", "korean": "턱" },
+  { "english": "chocolate", "korean": "초콜릿" },
+  { "english": "choice", "korean": "선택, 결정" },
+  { "english": "chopstick", "korean": "젓가락" },
+  { "english": "church", "korean": "교회" },
+  { "english": "circle", "korean": "원, 동그라미" },
+  { "english": "citizen", "korean": "시민, 주민" },
+  { "english": "city", "korean": "도시" },
+  { "english": "clap", "korean": "박수치다, 손뼉을 치다" },
+  { "english": "classmate", "korean": "학급 친구, 반 친구" },
+  { "english": "classroom", "korean": "교실, 학급" },
+  { "english": "climate", "korean": "기후, 풍토" }
+]
+
+];
+
+// ---------------- 학년별 데이터 (단어 수 확장 적용) ----------------
+const gradeData = {
+  E3: {
+    label: "초등 3학년 수준",
+    vocabList: expandVocab(baseVocabE3, 50),   // ★ 50개
+    listenSentences: [
+      { english: "This is my cat.", korean: "이것은 내 고양이에요." },
+      { english: "I have a blue bag.", korean: "나는 파란 가방이 있어요." },
+      { english: "I go to school by bus.", korean: "나는 버스를 타고 학교에 가요." },
+      { english: "My friend sits next to me.", korean: "내 친구는 내 옆에 앉아요." },
+      { english: "The teacher is kind.", korean: "선생님은 친절하세요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "This is my ____.",
+        answer: "cat",
+        options: ["cat", "desk", "door", "bus"]
       },
-      E4: {
-        label: "초등 4학년 수준",
-        vocabList: [
-          { english: "family", korean: "가족" },
-          { english: "homework", korean: "숙제" },
-          { english: "favorite", korean: "가장 좋아하는" },
-          { english: "subject", korean: "과목" },
-          { english: "lesson", korean: "수업" }
-        ],
-        listenSentences: [
-          { english: "My favorite subject is English.", korean: "내가 가장 좋아하는 과목은 영어예요." },
-          { english: "I do my homework after dinner.", korean: "나는 저녁 식사 후에 숙제를 해요." },
-          { english: "I play soccer with my friends.", korean: "나는 친구들과 축구를 해요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "My favorite ____ is English.",
-            answer: "subject",
-            options: ["subject", "bag", "friend", "game"]
-          },
-          {
-            sentence: "I do my ____ every day.",
-            answer: "homework",
-            options: ["homework", "pencil", "cat", "music"]
-          },
-          {
-            sentence: "I play ____ with my friends.",
-            answer: "soccer",
-            options: ["soccer", "milk", "paper", "chair"]
-          }
-        ]
+      {
+        sentence: "I have a ____ bag.",
+        answer: "blue",
+        options: ["blue", "big", "dog", "green"]
       },
-      E5: {
-        label: "초등 5학년 수준",
-        vocabList: [
-          { english: "healthy", korean: "건강한" },
-          { english: "exercise", korean: "운동" },
-          { english: "delicious", korean: "맛있는" },
-          { english: "environment", korean: "환경" },
-          { english: "recycle", korean: "재활용하다" }
-        ],
-        listenSentences: [
-          { english: "I exercise three times a week.", korean: "나는 일주일에 세 번 운동해요." },
-          { english: "Vegetables are good for your health.", korean: "채소는 건강에 좋아요." },
-          { english: "We should recycle plastic bottles.", korean: "우리는 플라스틱 병을 재활용해야 해요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "I ____ every morning.",
-            answer: "exercise",
-            options: ["exercise", "sleep", "eat", "draw"]
-          },
-          {
-            sentence: "This cake is very ____.",
-            answer: "delicious",
-            options: ["delicious", "short", "quiet", "early"]
-          },
-          {
-            sentence: "We must protect the ____.",
-            answer: "environment",
-            options: ["environment", "pencil", "computer", "window"]
-          }
-        ]
+      {
+        sentence: "I go to ____ every day.",
+        answer: "school",
+        options: ["school", "apple", "bed", "phone"]
       },
-      E6: {
-        label: "초등 6학년 수준",
-        vocabList: [
-          { english: "culture", korean: "문화" },
-          { english: "history", korean: "역사" },
-          { english: "museum", korean: "박물관" },
-          { english: "experience", korean: "경험" },
-          { english: "volunteer", korean: "봉사하다, 자원봉사자" }
-        ],
-        listenSentences: [
-          { english: "We visited a history museum last weekend.", korean: "우리는 지난 주말에 역사 박물관을 방문했어요." },
-          { english: "I want to experience other cultures.", korean: "나는 다른 문화를 경험하고 싶어요." },
-          { english: "My sister volunteers at the animal shelter.", korean: "내 여동생은 동물 보호소에서 봉사해요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "We visited a ____ last Sunday.",
-            answer: "museum",
-            options: ["museum", "market", "river", "kitchen"]
-          },
-          {
-            sentence: "I want to learn world ____.",
-            answer: "history",
-            options: ["history", "juice", "music", "winter"]
-          },
-          {
-            sentence: "She ____ at the library.",
-            answer: "volunteers",
-            options: ["volunteers", "drinks", "drives", "sleeps"]
-          }
-        ]
-      },
-      M1: {
-        label: "중학교 1학년 수준",
-        vocabList: [
-          { english: "teenager", korean: "십대" },
-          { english: "hobby", korean: "취미" },
-          { english: "favorite", korean: "가장 좋아하는" },
-          { english: "daily", korean: "매일의, 일상의" },
-          { english: "schedule", korean: "시간표, 일정" }
-        ],
-        listenSentences: [
-          { english: "My hobby is playing computer games.", korean: "내 취미는 컴퓨터 게임을 하는 거예요." },
-          { english: "I usually get up at seven in the morning.", korean: "나는 보통 아침 7시에 일어나요." },
-          { english: "This is my daily schedule on weekdays.", korean: "이것은 평일에 나의 일상 시간표예요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "My ____ is watching movies.",
-            answer: "hobby",
-            options: ["hobby", "subject", "weather", "holiday"]
-          },
-          {
-            sentence: "I usually ____ up at seven.",
-            answer: "get",
-            options: ["get", "take", "put", "use"]
-          },
-          {
-            sentence: "This is my ____ schedule.",
-            answer: "daily",
-            options: ["daily", "heavy", "early", "cold"]
-          }
-        ]
-      },
-      M2: {
-        label: "중학교 2학년 수준",
-        vocabList: [
-          { english: "decision", korean: "결정" },
-          { english: "challenge", korean: "도전" },
-          { english: "responsible", korean: "책임감 있는" },
-          { english: "confident", korean: "자신감 있는" },
-          { english: "relationship", korean: "관계" }
-        ],
-        listenSentences: [
-          { english: "Making a good decision is not always easy.", korean: "좋은 결정을 내리는 것은 항상 쉽지는 않아요." },
-          { english: "I want to be a confident person.", korean: "나는 자신감 있는 사람이 되고 싶어요." },
-          { english: "We can grow through challenges.", korean: "우리는 도전을 통해 성장할 수 있어요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "This is an important ____.",
-            answer: "decision",
-            options: ["decision", "season", "station", "vacation"]
-          },
-          {
-            sentence: "He is very ____ and kind.",
-            answer: "responsible",
-            options: ["responsible", "hungry", "cloudy", "simple"]
-          },
-          {
-            sentence: "I want to have a good ____ with my friends.",
-            answer: "relationship",
-            options: ["relationship", "temperature", "direction", "competition"]
-          }
-        ]
-      },
-      M3: {
-        label: "중학교 3학년 수준",
-        vocabList: [
-          { english: "achievement", korean: "성취" },
-          { english: "destination", korean: "목적지" },
-          { english: "opportunity", korean: "기회" },
-          { english: "responsibility", korean: "책임" },
-          { english: "confidence", korean: "자신감" }
-        ],
-        listenSentences: [
-          { english: "Every small achievement can change your future.", korean: "작은 성취 하나하나가 너의 미래를 바꿀 수 있어요." },
-          { english: "Failure can be an opportunity to learn.", korean: "실패는 배울 수 있는 기회가 될 수 있어요." },
-          { english: "You are responsible for your own decisions.", korean: "너는 네 자신의 결정에 책임이 있어요." }
-        ],
-        blankQuestions: [
-          {
-            sentence: "This exam is important for my future ____. ",
-            answer: "achievement",
-            options: ["achievement", "weather", "traffic", "music"]
-          },
-          {
-            sentence: "Failure is an ____ to learn.",
-            answer: "opportunity",
-            options: ["opportunity", "accident", "hobby", "holiday"]
-          },
-          {
-            sentence: "You need ____ to speak in front of people.",
-            answer: "confidence",
-            options: ["confidence", "distance", "difference", "silence"]
-          }
-        ]
+      {
+        sentence: "My ____ is very kind.",
+        answer: "teacher",
+        options: ["teacher", "dog", "chair", "window"]
       }
-    };
+    ]
+  },
+  E4: {
+    label: "초등 4학년 수준",
+    vocabList: expandVocab(baseVocabE4, 50),   // ★ 50개
+    listenSentences: [
+      { english: "My favorite subject is English.", korean: "내가 가장 좋아하는 과목은 영어예요." },
+      { english: "I do my homework after dinner.", korean: "나는 저녁 식사 후에 숙제를 해요." },
+      { english: "I play soccer with my friends.", korean: "나는 친구들과 축구를 해요." },
+      { english: "I help my family on weekends.", korean: "나는 주말에 가족을 도와요." },
+      { english: "We sometimes go to the park together.", korean: "우리는 가끔 공원에 함께 가요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "My favorite ____ is English.",
+        answer: "subject",
+        options: ["subject", "bag", "friend", "game"]
+      },
+      {
+        sentence: "I do my ____ every day.",
+        answer: "homework",
+        options: ["homework", "pencil", "cat", "music"]
+      },
+      {
+        sentence: "I play ____ with my friends.",
+        answer: "soccer",
+        options: ["soccer", "milk", "paper", "chair"]
+      }
+    ]
+  },
+  E5: {
+    label: "초등 5학년 수준",
+    vocabList: expandVocab(baseVocabE5, 50),  // ★ 50개
+    listenSentences: [
+      { english: "I exercise three times a week.", korean: "나는 일주일에 세 번 운동해요." },
+      { english: "Vegetables are good for your health.", korean: "채소는 건강에 좋아요." },
+      { english: "We should recycle plastic bottles.", korean: "우리는 플라스틱 병을 재활용해야 해요." },
+      { english: "Protecting the environment is important.", korean: "환경을 지키는 것은 중요해요." },
+      { english: "I want to travel around the world someday.", korean: "나는 언젠가 세계를 여행하고 싶어요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "I ____ every morning.",
+        answer: "exercise",
+        options: ["exercise", "sleep", "eat", "draw"]
+      },
+      {
+        sentence: "This cake is very ____.",
+        answer: "delicious",
+        options: ["delicious", "short", "quiet", "early"]
+      },
+      {
+        sentence: "We must protect the ____.",
+        answer: "environment",
+        options: ["environment", "pencil", "computer", "window"]
+      }
+    ]
+  },
+  E6: {
+    label: "초등 6학년 수준",
+    vocabList: expandVocab(baseVocabE6, 50),  // ★ 50개
+    listenSentences: [
+      { english: "We visited a history museum last weekend.", korean: "우리는 지난 주말에 역사 박물관을 방문했어요." },
+      { english: "I want to experience other cultures.", korean: "나는 다른 문화를 경험하고 싶어요." },
+      { english: "My sister volunteers at the animal shelter.", korean: "내 여동생은 동물 보호소에서 봉사해요." },
+      { english: "Technology changes our lives very quickly.", korean: "기술은 우리의 삶을 매우 빠르게 바꾸어요." },
+      { english: "We should be responsible global citizens.", korean: "우리는 책임감 있는 세계 시민이 되어야 해요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "We visited a ____ last Sunday.",
+        answer: "museum",
+        options: ["museum", "market", "river", "kitchen"]
+      },
+      {
+        sentence: "I want to learn world ____.",
+        answer: "history",
+        options: ["history", "juice", "music", "winter"]
+      },
+      {
+        sentence: "She ____ at the library.",
+        answer: "volunteers",
+        options: ["volunteers", "drinks", "drives", "sleeps"]
+      }
+    ]
+  },
+  M1: {
+    label: "중학교 1학년 수준",
+    vocabList: expandVocab(baseVocabM1, 80),  // ★ 80개
+    listenSentences: [
+      { english: "My hobby is playing computer games.", korean: "내 취미는 컴퓨터 게임을 하는 거예요." },
+      { english: "I usually get up at seven in the morning.", korean: "나는 보통 아침 7시에 일어나요." },
+      { english: "This is my daily schedule on weekdays.", korean: "이것은 평일에 나의 일상 시간표예요." },
+      { english: "I want to improve my English vocabulary.", korean: "나는 영어 어휘를 늘리고 싶어요." },
+      { english: "Sometimes I write my feelings in my diary.", korean: "가끔 나는 내 감정을 일기에 써요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "My ____ is watching movies.",
+        answer: "hobby",
+        options: ["hobby", "subject", "weather", "holiday"]
+      },
+      {
+        sentence: "I usually ____ up at seven.",
+        answer: "get",
+        options: ["get", "take", "put", "use"]
+      },
+      {
+        sentence: "This is my ____ schedule.",
+        answer: "daily",
+        options: ["daily", "heavy", "early", "cold"]
+      }
+    ]
+  },
+  M2: {
+    label: "중학교 2학년 수준",
+    vocabList: expandVocab(baseVocabM2, 100),  // ★ 100개
+    listenSentences: [
+      { english: "Making a good decision is not always easy.", korean: "좋은 결정을 내리는 것은 항상 쉽지는 않아요." },
+      { english: "I want to be a confident person.", korean: "나는 자신감 있는 사람이 되고 싶어요." },
+      { english: "We can grow through challenges.", korean: "우리는 도전을 통해 성장할 수 있어요." },
+      { english: "We had a discussion about environmental problems.", korean: "우리는 환경 문제에 대해 토론했어요." },
+      { english: "Working together is important in any project.", korean: "어떤 프로젝트에서든 함께 일하는 것은 중요해요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "This is an important ____.",
+        answer: "decision",
+        options: ["decision", "season", "station", "vacation"]
+      },
+      {
+        sentence: "He is very ____ and kind.",
+        answer: "responsible",
+        options: ["responsible", "hungry", "cloudy", "simple"]
+      },
+      {
+        sentence: "I want to have a good ____ with my friends.",
+        answer: "relationship",
+        options: ["relationship", "temperature", "direction", "competition"]
+      }
+    ]
+  },
+  M3: {
+    label: "중학교 3학년 수준",
+    vocabList: expandVocab(baseVocabM3, 100),  // ★ 100개
+    listenSentences: [
+      { english: "Every small achievement can change your future.", korean: "작은 성취 하나하나가 너의 미래를 바꿀 수 있어요." },
+      { english: "Failure can be an opportunity to learn.", korean: "실패는 배울 수 있는 기회가 될 수 있어요." },
+      { english: "You are responsible for your own decisions.", korean: "너는 네 자신의 결정에 책임이 있어요." },
+      { english: "You need confidence to speak in front of people.", korean: "사람들 앞에서 말하기 위해서는 자신감이 필요해요." },
+      { english: "Cooperation and leadership are important in society.", korean: "협력과 리더십은 사회에서 중요해요." }
+    ],
+    blankQuestions: [
+      {
+        sentence: "This exam is important for my future ____. ",
+        answer: "achievement",
+        options: ["achievement", "weather", "traffic", "music"]
+      },
+      {
+        sentence: "Failure is an ____ to learn.",
+        answer: "opportunity",
+        options: ["opportunity", "accident", "hobby", "holiday"]
+      },
+      {
+        sentence: "You need ____ to speak in front of people.",
+        answer: "confidence",
+        options: ["confidence", "distance", "difference", "silence"]
+      }
+    ]
+  }
+};
 
     // ---------------- 공통 상태 ----------------
     let currentGradeKey = "E3";
@@ -822,6 +1764,7 @@
     const vocabInput = document.getElementById("vocabInput");
     const vocabFeedback = document.getElementById("vocabFeedback");
     const vocabCheckBtn = document.getElementById("vocabCheckBtn");
+    const vocabSpeakBtn = document.getElementById("vocabSpeakBtn");
     const vocabNextBtn = document.getElementById("vocabNextBtn");
     const vocabShowBtn = document.getElementById("vocabShowBtn");
 
@@ -870,7 +1813,16 @@
       vocabFeedback.className = "feedback";
     });
 
-    // ---------------- 듣고 따라 말하기 ----------------
+    // // 🔊 발음 듣기 버튼 이벤트
+   vocabSpeakBtn.addEventListener("click", () => {
+     const grade = getGrade();
+     const list = grade.vocabList;
+     const item = list[currentVocabIndex];
+
+  speakEnglish(item.english);
+});
+
+---------------- 듣고 따라 말하기 ----------------
     const listenSentence = document.getElementById("listenSentence");
     const listenKorean = document.getElementById("listenKorean");
     const listenSpeakBtn = document.getElementById("listenSpeakBtn");
