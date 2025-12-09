@@ -1494,8 +1494,6 @@ const baseVocabM3 = [
   { "english": "classmate", "korean": "학급 친구, 반 친구" },
   { "english": "classroom", "korean": "교실, 학급" },
   { "english": "climate", "korean": "기후, 풍토" }
-]
-
 ];
 
 // ---------------- 학년별 데이터 (단어 수 확장 적용) ----------------
@@ -1813,16 +1811,16 @@ const gradeData = {
       vocabFeedback.className = "feedback";
     });
 
-    // // 🔊 발음 듣기 버튼 이벤트
+    // 🔊 발음 듣기 버튼 이벤트
    vocabSpeakBtn.addEventListener("click", () => {
      const grade = getGrade();
      const list = grade.vocabList;
      const item = list[currentVocabIndex];
 
-  speakEnglish(item.english);
+  speakSentence(item.english);
 });
 
----------------- 듣고 따라 말하기 ----------------
+// ---------------- 듣고 따라 말하기 ----------------
     const listenSentence = document.getElementById("listenSentence");
     const listenKorean = document.getElementById("listenKorean");
     const listenSpeakBtn = document.getElementById("listenSpeakBtn");
