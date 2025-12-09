@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>에공맘 영어 공부 앱</title>
+  <style>
+.insta-link {
+  font-size: 11px;
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #ffd2e2;
+  text-decoration: none;
+  color: #e05282;
+  font-weight: 500;
+}
+
+.insta-link:hover {
+  background: #ffeaf2;
+}
+    :root {
+      --primary: #6c63ff;
+      --primary-soft: #ecebff;
+      --accent: #ff9fb6;
+      --bg-gradient: linear-gradient(135deg, #fef6ff, #ecf3ff);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-image: var(--bg-gradient);
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 1100px;
+      padding: 24px 16px 40px;
+    }
+
+    /* 상단 에공맘 헤더 */
+    .top-bar {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(90, 84, 255, 0.12);
+      margin-bottom: 18px;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ▶ 로고 이미지 사용하고 싶으면 이 부분 src만 바꾸면 됨 */
+   .logo-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  display: block;
+}
+
+    /* 이미지 없을 때 임시 텍스트 로고 */
+    .logo-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #ffe3ef, #ff8fb1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(255, 128, 171, 0.6);
+    }
+
+    .brand-text-main {
+      font-size: 17px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .brand-text-sub {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .top-right-tag {
+      font-size: 12px;
+      color: #6b6b6b;
+      background: #fff7f9;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid #ffd2e2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .top-right-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff6f91;
+    }
+
+    /* 콘텐츠 카드 영역 */
+    .container {
+      max-width: 960px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    h1 {
+      text-align: left;
+      font-size: 24px;
+      margin: 6px 2px 2px;
+      color: #333;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #666;
+      margin: 0 2px 16px;
+    }
+
+    .highlight {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* 학년 선택 */
+    .grade-bar-wrap {
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      padding: 10px 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+    }
+
+    .grade-bar-label {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 6px;
+      margin-left: 4px;
+    }
+
+    .grade-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .grade-btn {
+      border: none;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: #eef0ff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #444;
+      transition: all 0.2s ease;
+    }
+
+    .grade-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .grade-btn.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(108, 99, 255, 0.35);
+    }
+
+    .current-grade {
+      font-size: 12px;
+      color: #555;
+      margin-top: 6px;
+      margin-left: 4px;
+    }
+
+    /* 탭 버튼 */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #e6e9ff;
+      cursor: pointer;
+      font-size: 13px;
+      color: #444;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      border: 1px solid var(--primary-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 780px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      h1 {
+        text-align: left;
+      }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 18px;
+      padding: 18px 16px;
+      box-shadow: 0 10px 24px rgba(31, 63, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .section-title {
+      font-size: 16px;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-chip {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #fff0f5;
+      color: #d74b7d;
+    }
+
+    .section-desc {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 12px;
+    }
+
+    .label {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #444;
+      font-weight: 500;
+    }
+
+    .big-text {
+      font-size: 20px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid #d6d9f3;
+      font-size: 14px;
+      box-sizing: border-box;
+      margin-bottom: 8px;
+      outline: none;
+      transition: all 0.15s ease;
+      background: #fafbff;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.18);
+      background: #fff;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      border: none;
+      padding: 7px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-main {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-sub {
+      background: #f3f4ff;
+      color: #444;
+    }
+
+    .feedback {
+      min-height: 22px;
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .correct {
+      color: #0c9a2c;
+    }
+
+    .wrong {
+      color: #e02424;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .option-btn {
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid #d6d9f3;
+      background: #f9f9ff;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover {
+      background: #eef0ff;
+      border-color: var(--primary);
+    }
+
+    .sentence {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .small {
+      font-size: 11px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: #999;
+      margin-top: 10px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <!-- 상단 에공맘 헤더 -->
+   <header class="top-bar">
+  <div class="brand-area">
+    <!-- 로고 이미지 사용 -->
+    <img src="egongmom-logo.png" alt="에공맘 로고" class="logo-img" />
+    <div class="logo-circle" style="display:none;">EG</div>
+
+    <div>
+      <div class="brand-text-main">에공맘 AI 영어교실</div>
+      <div class="brand-text-sub">엄마랑 함께 하는 초·중등 맞춤 영어 연습</div>
+    </div>
+  </div>
+
+  <div class="top-right-tag">
+    <div class="top-right-dot"></div>
+    <span>오늘도 한 걸음만, 천천히 🌱</span>
+    <a href="https://www.instagram.com/aigongmom/" target="_blank" class="insta-link">
+      Instagram @aigongmom
+    </a>
+  </div>
+</header>
+
+    <div class="container">
+      <h1>학년별 영어 공부 앱</h1>
+      <p class="subtitle">
+        <span class="highlight">단어 퀴즈 · 듣고 따라 말하기 · 빈칸 채우기</span>로  
+        우리 아이 수준에 딱 맞게 연습해요.
+      </p>
+
+      <!-- 학년 선택 -->
+      <div class="grade-bar-wrap">
+        <div class="grade-bar-label">학년 선택</div>
+        <div class="grade-bar">
+          <button class="grade-btn active" data-grade="E3">초3</button>
+          <button class="grade-btn" data-grade="E4">초4</button>
+          <button class="grade-btn" data-grade="E5">초5</button>
+          <button class="grade-btn" data-grade="E6">초6</button>
+          <button class="grade-btn" data-grade="M1">중1</button>
+          <button class="grade-btn" data-grade="M2">중2</button>
+          <button class="grade-btn" data-grade="M3">중3</button>
+        </div>
+        <div class="current-grade" id="currentGradeText">현재: 초등 3학년 수준</div>
+      </div>
+
+      <!-- 탭 버튼 -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="vocab">단어 퀴즈</button>
+        <button class="tab-btn" data-tab="listen">문장 듣고 말하기</button>
+        <button class="tab-btn" data-tab="blank">빈칸 채우기</button>
+      </div>
+
+      <!-- 메인 레이아웃 (단어/듣기 + 빈칸) -->
+      <div class="layout">
+        <!-- 왼쪽: 단어 퀴즈 & 듣기 -->
+        <div>
+          <!-- 단어 퀴즈 -->
+          <div class="card tab-content" id="vocab">
+            <div class="section-title">
+              단어 퀴즈
+              <span class="section-chip">쓰기 연습</span>
+            </div>
+            <div class="section-desc">뜻을 보고 알맞은 영어 단어를 써보세요.</div>
+
+            <div class="label">뜻 (한국어)</div>
+            <div id="vocabMeaning" class="big-text"></div>
+
+            <div class="label">영어 단어를 입력하세요</div>
+            <input type="text" id="vocabInput" placeholder="정답을 영어로 입력" />
+            <div class="btn-row">
+              <button class="btn-main" id="vocabCheckBtn">정답 확인</button>
+              <button class="btn-sub" id="vocabNextBtn">다음 문제</button>
+              <button class="btn-sub" id="vocabShowBtn">정답 보기</button>
+            </div>
+            <div id="vocabFeedback" class="feedback"></div>
+          </div>
+
+          <!-- 듣고 따라 말하기 -->
+          <div class="card tab-content" id="listen" style="display:none; margin-top: 14px;">
+            <div class="section-title">
+              문장 듣고 말하기
+              <span class="section-chip">리스닝 & 스피킹</span>
+            </div>
+            <div class="section-desc">
+              문장을 듣고 아이가 크게 따라 말해보게 해주세요. (브라우저의 영어 음성 읽기 기능 사용)
+            </div>
+
+            <div class="label">문장</div>
+            <div id="listenSentence" class="sentence"></div>
+            <div class="small" id="listenKorean"></div>
+
+            <div class="btn-row">
+              <button class="btn-main" id="listenSpeakBtn">문장 들려주기 ▶</button>
+              <button class="btn-sub" id="listenNextBtn">다음 문장</button>
+            </div>
+            <div class="small">🔊 크롬 브라우저에서 가장 잘 작동합니다.</div>
+          </div>
+        </div>
+
+        <!-- 오른쪽: 빈칸 채우기 -->
+        <div>
+          <!-- 빈칸 채우기 -->
+          <div class="card tab-content" id="blank" style="display:none;">
+            <div class="section-title">
+              빈칸 채우기
+              <span class="section-chip">문장 이해</span>
+            </div>
+            <div class="section-desc">
+              문장을 보고 빈칸에 들어갈 알맞은 단어를 골라보세요.
+            </div>
+
+            <div class="label">문장</div>
+            <div id="blankSentence" class="sentence"></div>
+
+            <div class="label">선택지</div>
+            <div id="blankOptions" class="options"></div>
+
+            <div id="blankFeedback" class="feedback"></div>
+            <button class="btn-sub" id="blankNextBtn" style="margin-top: 8px;">다음 문제</button>
+          </div>
+
+         <p class="tagline">
+  © 에공맘 · AI로 함께 공부하는 엄마의 영어 연습장
+  · <a href="https://www.instagram.com/aigongmom/" target="_blank" class="insta-link">Instagram @aigongmom</a>
+</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------- 학년별 데이터 ----------------
+    const gradeData = {
+      E3: {
+        label: "초등 3학년 수준",
+        vocabList: [
+          { english: "cat", korean: "고양이" },
+          { english: "dog", korean: "강아지" },
+          { english: "school", korean: "학교" },
+          { english: "book", korean: "책" },
+          { english: "pencil", korean: "연필" }
+        ],
+        listenSentences: [
+          { english: "This is my cat.", korean: "이것은 내 고양이에요." },
+          { english: "I have a blue bag.", korean: "나는 파란 가방이 있어요." },
+          { english: "I go to school by bus.", korean: "나는 버스를 타고 학교에 가요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "This is my ____.",
+            answer: "cat",
+            options: ["cat", "desk", "door", "bus"]
+          },
+          {
+            sentence: "I have a ____ bag.",
+            answer: "blue",
+            options: ["blue", "big", "dog", "green"]
+          },
+          {
+            sentence: "I go to ____ every day.",
+            answer: "school",
+            options: ["school", "apple", "bed", "phone"]
+          }
+        ]
+      },
+      E4: {
+        label: "초등 4학년 수준",
+        vocabList: [
+          { english: "family", korean: "가족" },
+          { english: "homework", korean: "숙제" },
+          { english: "favorite", korean: "가장 좋아하는" },
+          { english: "subject", korean: "과목" },
+          { english: "lesson", korean: "수업" }
+        ],
+        listenSentences: [
+          { english: "My favorite subject is English.", korean: "내가 가장 좋아하는 과목은 영어예요." },
+          { english: "I do my homework after dinner.", korean: "나는 저녁 식사 후에 숙제를 해요." },
+          { english: "I play soccer with my friends.", korean: "나는 친구들과 축구를 해요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "My favorite ____ is English.",
+            answer: "subject",
+            options: ["subject", "bag", "friend", "game"]
+          },
+          {
+            sentence: "I do my ____ every day.",
+            answer: "homework",
+            options: ["homework", "pencil", "cat", "music"]
+          },
+          {
+            sentence: "I play ____ with my friends.",
+            answer: "soccer",
+            options: ["soccer", "milk", "paper", "chair"]
+          }
+        ]
+      },
+      E5: {
+        label: "초등 5학년 수준",
+        vocabList: [
+          { english: "healthy", korean: "건강한" },
+          { english: "exercise", korean: "운동" },
+          { english: "delicious", korean: "맛있는" },
+          { english: "environment", korean: "환경" },
+          { english: "recycle", korean: "재활용하다" }
+        ],
+        listenSentences: [
+          { english: "I exercise three times a week.", korean: "나는 일주일에 세 번 운동해요." },
+          { english: "Vegetables are good for your health.", korean: "채소는 건강에 좋아요." },
+          { english: "We should recycle plastic bottles.", korean: "우리는 플라스틱 병을 재활용해야 해요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "I ____ every morning.",
+            answer: "exercise",
+            options: ["exercise", "sleep", "eat", "draw"]
+          },
+          {
+            sentence: "This cake is very ____.",
+            answer: "delicious",
+            options: ["delicious", "short", "quiet", "early"]
+          },
+          {
+            sentence: "We must protect the ____.",
+            answer: "environment",
+            options: ["environment", "pencil", "computer", "window"]
+          }
+        ]
+      },
+      E6: {
+        label: "초등 6학년 수준",
+        vocabList: [
+          { english: "culture", korean: "문화" },
+          { english: "history", korean: "역사" },
+          { english: "museum", korean: "박물관" },
+          { english: "experience", korean: "경험" },
+          { english: "volunteer", korean: "봉사하다, 자원봉사자" }
+        ],
+        listenSentences: [
+          { english: "We visited a history museum last weekend.", korean: "우리는 지난 주말에 역사 박물관을 방문했어요." },
+          { english: "I want to experience other cultures.", korean: "나는 다른 문화를 경험하고 싶어요." },
+          { english: "My sister volunteers at the animal shelter.", korean: "내 여동생은 동물 보호소에서 봉사해요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "We visited a ____ last Sunday.",
+            answer: "museum",
+            options: ["museum", "market", "river", "kitchen"]
+          },
+          {
+            sentence: "I want to learn world ____.",
+            answer: "history",
+            options: ["history", "juice", "music", "winter"]
+          },
+          {
+            sentence: "She ____ at the library.",
+            answer: "volunteers",
+            options: ["volunteers", "drinks", "drives", "sleeps"]
+          }
+        ]
+      },
+      M1: {
+        label: "중학교 1학년 수준",
+        vocabList: [
+          { english: "teenager", korean: "십대" },
+          { english: "hobby", korean: "취미" },
+          { english: "favorite", korean: "가장 좋아하는" },
+          { english: "daily", korean: "매일의, 일상의" },
+          { english: "schedule", korean: "시간표, 일정" }
+        ],
+        listenSentences: [
+          { english: "My hobby is playing computer games.", korean: "내 취미는 컴퓨터 게임을 하는 거예요." },
+          { english: "I usually get up at seven in the morning.", korean: "나는 보통 아침 7시에 일어나요." },
+          { english: "This is my daily schedule on weekdays.", korean: "이것은 평일에 나의 일상 시간표예요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "My ____ is watching movies.",
+            answer: "hobby",
+            options: ["hobby", "subject", "weather", "holiday"]
+          },
+          {
+            sentence: "I usually ____ up at seven.",
+            answer: "get",
+            options: ["get", "take", "put", "use"]
+          },
+          {
+            sentence: "This is my ____ schedule.",
+            answer: "daily",
+            options: ["daily", "heavy", "early", "cold"]
+          }
+        ]
+      },
+      M2: {
+        label: "중학교 2학년 수준",
+        vocabList: [
+          { english: "decision", korean: "결정" },
+          { english: "challenge", korean: "도전" },
+          { english: "responsible", korean: "책임감 있는" },
+          { english: "confident", korean: "자신감 있는" },
+          { english: "relationship", korean: "관계" }
+        ],
+        listenSentences: [
+          { english: "Making a good decision is not always easy.", korean: "좋은 결정을 내리는 것은 항상 쉽지는 않아요." },
+          { english: "I want to be a confident person.", korean: "나는 자신감 있는 사람이 되고 싶어요." },
+          { english: "We can grow through challenges.", korean: "우리는 도전을 통해 성장할 수 있어요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "This is an important ____.",
+            answer: "decision",
+            options: ["decision", "season", "station", "vacation"]
+          },
+          {
+            sentence: "He is very ____ and kind.",
+            answer: "responsible",
+            options: ["responsible", "hungry", "cloudy", "simple"]
+          },
+          {
+            sentence: "I want to have a good ____ with my friends.",
+            answer: "relationship",
+            options: ["relationship", "temperature", "direction", "competition"]
+          }
+        ]
+      },
+      M3: {
+        label: "중학교 3학년 수준",
+        vocabList: [
+          { english: "achievement", korean: "성취" },
+          { english: "destination", korean: "목적지" },
+          { english: "opportunity", korean: "기회" },
+          { english: "responsibility", korean: "책임" },
+          { english: "confidence", korean: "자신감" }
+        ],
+        listenSentences: [
+          { english: "Every small achievement can change your future.", korean: "작은 성취 하나하나가 너의 미래를 바꿀 수 있어요." },
+          { english: "Failure can be an opportunity to learn.", korean: "실패는 배울 수 있는 기회가 될 수 있어요." },
+          { english: "You are responsible for your own decisions.", korean: "너는 네 자신의 결정에 책임이 있어요." }
+        ],
+        blankQuestions: [
+          {
+            sentence: "This exam is important for my future ____. ",
+            answer: "achievement",
+            options: ["achievement", "weather", "traffic", "music"]
+          },
+          {
+            sentence: "Failure is an ____ to learn.",
+            answer: "opportunity",
+            options: ["opportunity", "accident", "hobby", "holiday"]
+          },
+          {
+            sentence: "You need ____ to speak in front of people.",
+            answer: "confidence",
+            options: ["confidence", "distance", "difference", "silence"]
+          }
+        ]
+      }
+    };
+
+    // ---------------- 공통 상태 ----------------
+    let currentGradeKey = "E3";
+    let currentVocabIndex = 0;
+    let currentListenIndex = 0;
+    let currentBlankIndex = 0;
+
+    const currentGradeText = document.getElementById("currentGradeText");
+
+    function getGrade() {
+      return gradeData[currentGradeKey];
+    }
+
+    function updateCurrentGradeText() {
+      currentGradeText.textContent = "현재: " + getGrade().label;
+    }
+
+    // ---------------- 학년 버튼 이벤트 ----------------
+    const gradeButtons = document.querySelectorAll(".grade-btn");
+    gradeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const grade = btn.dataset.grade;
+        currentGradeKey = grade;
+        currentVocabIndex = 0;
+        currentListenIndex = 0;
+        currentBlankIndex = 0;
+
+        gradeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        updateCurrentGradeText();
+        loadVocabQuestion();
+        loadListenSentence();
+        loadBlankQuestion();
+      });
+    });
+
+    // ---------------- 탭 전환 ----------------
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    function showTab(tabId) {
+      tabContents.forEach(c => {
+        c.style.display = c.id === tabId ? (tabId === "blank" ? "block" : "block") : "none";
+      });
+      tabButtons.forEach(b => {
+        b.classList.toggle("active", b.dataset.tab === tabId);
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.tab;
+        showTab(target);
+      });
+    });
+
+    // ---------------- 단어 퀴즈 ----------------
+    const vocabMeaning = document.getElementById("vocabMeaning");
+    const vocabInput = document.getElementById("vocabInput");
+    const vocabFeedback = document.getElementById("vocabFeedback");
+    const vocabCheckBtn = document.getElementById("vocabCheckBtn");
+    const vocabNextBtn = document.getElementById("vocabNextBtn");
+    const vocabShowBtn = document.getElementById("vocabShowBtn");
+
+    function loadVocabQuestion() {
+      const list = getGrade().vocabList;
+      if (!list || list.length === 0) {
+        vocabMeaning.textContent = "문제가 없습니다.";
+        return;
+      }
+      if (currentVocabIndex >= list.length) currentVocabIndex = 0;
+      const item = list[currentVocabIndex];
+      vocabMeaning.textContent = item.korean;
+      vocabInput.value = "";
+      vocabFeedback.textContent = "";
+      vocabInput.focus();
+    }
+
+    vocabCheckBtn.addEventListener("click", () => {
+      const list = getGrade().vocabList;
+      const user = vocabInput.value.trim().toLowerCase();
+      const correct = list[currentVocabIndex].english.toLowerCase();
+      if (!user) {
+        vocabFeedback.textContent = "먼저 정답을 입력해 보세요.";
+        vocabFeedback.className = "feedback wrong";
+        return;
+      }
+      if (user === correct) {
+        vocabFeedback.textContent = "정답이에요! 잘했어요 👏";
+        vocabFeedback.className = "feedback correct";
+      } else {
+        vocabFeedback.textContent = `아쉬워요 😅 정답은 "${correct}"`;
+        vocabFeedback.className = "feedback wrong";
+      }
+    });
+
+    vocabNextBtn.addEventListener("click", () => {
+      const list = getGrade().vocabList;
+      currentVocabIndex = (currentVocabIndex + 1) % list.length;
+      loadVocabQuestion();
+    });
+
+    vocabShowBtn.addEventListener("click", () => {
+      const list = getGrade().vocabList;
+      const correct = list[currentVocabIndex].english;
+      vocabFeedback.textContent = `정답: ${correct}`;
+      vocabFeedback.className = "feedback";
+    });
+
+    // ---------------- 듣고 따라 말하기 ----------------
+    const listenSentence = document.getElementById("listenSentence");
+    const listenKorean = document.getElementById("listenKorean");
+    const listenSpeakBtn = document.getElementById("listenSpeakBtn");
+    const listenNextBtn = document.getElementById("listenNextBtn");
+
+    function loadListenSentence() {
+      const list = getGrade().listenSentences;
+      if (!list || list.length === 0) {
+        listenSentence.textContent = "문장이 없습니다.";
+        listenKorean.textContent = "";
+        return;
+      }
+      if (currentListenIndex >= list.length) currentListenIndex = 0;
+      const item = list[currentListenIndex];
+      listenSentence.textContent = item.english;
+      listenKorean.textContent = item.korean;
+    }
+
+    function speakSentence(text) {
+      if (!("speechSynthesis" in window)) {
+        alert("이 기능은 이 브라우저에서 지원되지 않아요. 크롬 사용을 추천합니다.");
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-US";
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+
+    listenSpeakBtn.addEventListener("click", () => {
+      const list = getGrade().listenSentences;
+      if (!list || list.length === 0) return;
+      const text = list[currentListenIndex].english;
+      speakSentence(text);
+    });
+
+    listenNextBtn.addEventListener("click", () => {
+      const list = getGrade().listenSentences;
+      currentListenIndex = (currentListenIndex + 1) % list.length;
+      loadListenSentence();
+    });
+
+    // ---------------- 빈칸 채우기 ----------------
+    const blankSentence = document.getElementById("blankSentence");
+    const blankOptions = document.getElementById("blankOptions");
+    const blankFeedback = document.getElementById("blankFeedback");
+    const blankNextBtn = document.getElementById("blankNextBtn");
+
+    function loadBlankQuestion() {
+      const list = getGrade().blankQuestions;
+      if (!list || list.length === 0) {
+        blankSentence.textContent = "문제가 없습니다.";
+        blankOptions.innerHTML = "";
+        blankFeedback.textContent = "";
+        return;
+      }
+      if (currentBlankIndex >= list.length) currentBlankIndex = 0;
+
+      const q = list[currentBlankIndex];
+      blankSentence.textContent = q.sentence;
+      blankOptions.innerHTML = "";
+      blankFeedback.textContent = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "option-btn";
+        btn.addEventListener("click", () => {
+          if (opt === q.answer) {
+            blankFeedback.textContent = "정답입니다! 👍";
+            blankFeedback.className = "feedback correct";
+          } else {
+            blankFeedback.textContent = `다시 생각해볼까요? 정답은 "${q.answer}"`;
+            blankFeedback.className = "feedback wrong";
+          }
+        });
+        blankOptions.appendChild(btn);
+      });
+    }
+
+    blankNextBtn.addEventListener("click", () => {
+      const list = getGrade().blankQuestions;
+      currentBlankIndex = (currentBlankIndex + 1) % list.length;
+      loadBlankQuestion();
+    });
+
+    // ---------------- 초기 로딩 ----------------
+    updateCurrentGradeText();
+    loadVocabQuestion();
+    loadListenSentence();
+    loadBlankQuestion();
+    // 기본 탭은 단어 퀴즈
+    showTab("vocab");
+  </script>
+</body>
+</html>
